@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Якутия в Великой Отечественной войне | Карта истории</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Все стили остаются такими же как в предыдущем коде */
+        :root {
+            --primary-color: #e63946;
+            --primary-dark: #c1121f;
+            --secondary-color: #2a9d8f;
+            --secondary-dark: #21867a;
+            --dark-bg: #1a1a1a;
+            --dark-card: #2d2d2d;
+            --light-bg: #f5f5f5;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #f0f0f0;
+            --shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --shadow-dark: 0 5px 15px rgba(0,0,0,0.3);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--dark-bg);
+            color: var(--white);
+            padding: 15px 0;
+            box-shadow: var(--shadow-dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 26px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://yakutia-daily.ru/wp-content/uploads/2025/04/prizyvniki.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--white);
+            text-align: center;
+            padding: 120px 0;
+            position: relative;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn i {
+            margin-left: 8px;
+        }
+        
+        /* Sections */
+        section {
+            padding: 80px 0;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 36px;
+            color: var(--dark-bg);
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .about-content {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            line-height: 1.8;
+            transition: var(--transition);
+        }
+        
+        .about-content:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--white);
+            border: 4px solid var(--primary-color);
+            border-radius: 50%;
+            top: 15px;
+            right: -10px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .right::after {
+            left: -10px;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .timeline-content h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Map Section */
+        .map-section {
+            background-color: #f0f0f0;
+        }
+        
+        .map-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+        
+        .map-container:hover {
+            box-shadow: var(--shadow-dark);
+        }
+        
+        #monuments-map {
+            height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .map-description {
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Popup */
+        .popup-content {
+            min-width: 250px;
+            max-width: 300px;
+        }
+        
+        .popup-content h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        
+        .popup-content img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .details-btn {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: var(--white);
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .details-btn:hover {
+            background: var(--secondary-dark);
+        }
+        
+        /* Facts Section */
+        .facts {
+            background-color: var(--dark-bg);
+            color: var(--white);
+        }
+        
+        .facts h2 {
+            color: var(--white);
+        }
+        
+        .facts h2::after {
+            background-color: var(--primary-color);
+        }
+        
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .fact-card {
+            background-color: var(--dark-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .fact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .fact-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+        .fact-card p {
+            font-size: 18px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-bg);
+            color: var(--white);
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        
+        /* Modal */
+        #monument-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .monument-detail {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            position: relative;
+            animation: slideUp 0.5s ease;
+        }
+        
+        .monument-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .monument-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .monument-gallery img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .monument-gallery img:hover {
+            transform: scale(1.03);
+        }
+        
+        .monument-info {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #6c757d;
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateX(-5px);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: var(--white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 99;
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px);
+        }
+        
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 5px 10px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 21px;
+            }
+            
+            .right {
+                left: 0;
+            }
+            
+            #monuments-map {
+                height: 400px;
+            }
+            
+            .monument-detail {
+                margin: 20px auto;
+                padding: 20px 15px;
+            }
+            
+            h2 {
+                font-size: 28px;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .hero {
+                padding: 80px 0;
+            }
+            
+            .hero h1 {
+                font-size: 28px;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .fact-card h3 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll to top button -->
+    <div class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+    
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                
+                <span>Карта памяти</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">О проекте</a></li>
+                    <li><a href="#timeline">Хронология</a></li>
+                    <li><a href="#monuments">Памятники</a></li>
+                    <li><a href="#facts">Факты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Вклад Якутии в Победу</h1>
+            <p>Республика Саха (Якутия) внесла неоценимый вклад в победу над фашизмом в Великой Отечественной войне 1941-1945 годов.</p>
+            <a href="#about" class="btn">Узнать больше <i class="fas fa-arrow-down"></i></a>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2>О проекте</h2>
+            <div class="about-content">
+                <p>Этот проект "Карта памяти" посвящен изучению и сохранению памяти о вкладе Республики Саха (Якутия) в победу в Великой Отечественной войне. Якутия, находясь в тысячах километров от фронта, стала важным тыловым регионом, обеспечивавшим страну стратегическими ресурсами и пополнением для Красной Армии.</p>
+                <p>За годы войны из Якутии на фронт было призвано более 62 тысяч человек. Якутяне проявили мужество и героизм в боях под Москвой, Сталинградом, на Курской дуге, при обороне Ленинграда и в других ключевых сражениях войны.</p>
+                <p>Кроме того, Якутия стала важным поставщиком стратегического сырья - золота, олова, пушнины, а также сельскохозяйственной продукции для нужд фронта и тыла.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="timeline">
+        <div class="container">
+            <h2>Хронология вклада Якутии</h2>
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> Июнь-июль 1941</h3>
+                        <p>Начало мобилизации в Якутской АССР. Формирование первых добровольческих отрядов.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> 1941-1942</h3>
+                        <p>Якутия направляет на фронт более 20 тысяч бойцов. Начинается сбор средств в фонд обороны.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> 1942</h3>
+                        <p>Создание Якутской стрелковой бригады. Увеличение добычи золота и олова для военных нужд.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> 1943</h3>
+                        <p>Якутяне участвуют в ключевых сражениях: Сталинград, Курская дуга. Сбор средств на танковую колонну "Советская Якутия".</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> 1944</h3>
+                        <p>Открытие воздушной трассы "Аляска-Сибирь" (Алсиб) с участком через Якутию.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-calendar-alt"></i> 1945</h3>
+                        <p>Якутяне участвуют в штурме Берлина. Всего за годы войны из Якутии на фронт отправлено более 62 тысяч человек.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="monuments" class="map-section">
+        <div class="container">
+            <h2>Карта памятников героев в Якутске</h2>
+            <div class="map-container">
+                <div id="monuments-map"></div>
+                <div class="map-description">
+                    <p>На карте отмечены памятники и мемориалы, посвященные героям Великой Отечественной войны в Якутске. Нажмите на маркер, чтобы увидеть подробную информацию о памятнике.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="facts" class="facts">
+        <div class="container">
+            <h2>Факты о вкладе Якутии</h2>
+            <div class="facts-grid">
+                <div class="fact-card">
+                    <h3>62 000+</h3>
+                    <p>якутян ушли на фронт</p>
+                </div>
+                <div class="fact-card">
+                    <h3>24</h3>
+                    <p>Героя Советского Союза из Якутии</p>
+                </div>
+                <div class="fact-card">
+                    <h3>13 000+</h3>
+                    <p>якутян погибли на фронтах войны</p>
+                </div>
+                <div class="fact-card">
+                    <h3>300+ млн руб</h3>
+                    <p>собрано в фонд обороны</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О проекте</h3>
+                    <p>Образовательный проект, посвященный изучению вклада Республики Саха (Якутия) в Победу в Великой Отечественной войне.</p>
+
+                </div>
+                
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Проект "Карта памяти". L.P</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно для детальной информации о памятнике -->
+    <div id="monument-modal">
+        <div class="monument-detail">
+            <button class="back-btn" onclick="closeMonumentModal()">
+                <i class="fas fa-arrow-left"></i> Назад к карте
+            </button>
+            <div id="monument-content"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Данные о памятниках
+        const monuments = [
+            {
+                id: 1,
+                name: "Памятник Н.А. Кондакову",
+                coords: [62.026973, 129.724001],
+                description: "Памятник герою Великой Отечественной войны Н.А. Кондакову",
+                fullDescription: "Николай Алексеевич Кондаков - герой Великой Отечественной войны, проявивший мужество и отвагу в боях за Родину. Памятник установлен в честь его подвига и в память о всех якутянах, сражавшихся на фронтах войны.",
+                history: "Родился 12 июля 1920 года в Жемконском наслеге, ныне Вилюйского улуса Якутии, в крестьянской семье. Якут.В 1938 году окончил Вилюйское педагогическое училище. Работалучителем Хампинской начальной школы Вилюйского района.В Красной Армии с июня 1942 года. В 1943 году окончил Ростовское артиллерийское училище. В боях Великой Отечественной войны с декабря 1943 года.Командир огневого взвода 1073-го армейского истребительно-противотанкового артиллерийского полка старший лейтенант Николай Кондаков 25 января 1945 года при форсировании реки Одер в районе населённого пункта Дёберн (ныне Добжень-Вельки, Польша), расположенного в пяти километрах северо-западнее польского города Ополе, поддерживая подразделения 173-го гвардейского стрелкового полка, первым переправил орудия вверенного ему взвода на левый берег и способствовал захвату и расширению плацдарма. Прямой наводкой артиллерист подавил шесть пулемётных точек и уничтожил до взвода гитлеровцев.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Памятник+Кондакову"
+            },
+            {
+                id: 2,
+                name: "Танк Т-34-85 и Памятник 'Мать, провожающая детей на фронт'",
+                coords: [62.038477, 129.755265],
+                description: "Легендарный танк Т-34-85 и памятник матерям, провожавшим детей на фронт",
+                fullDescription: "Памятник танку Т-34 и памятник «Проводы на фронт» стали составляющими элементами в создании мемориального комплекса «Победа» на одноимённой площади в столице Республики Саха (Якутия), основанного в 1975 году.",
+                history: "Памятник танку Т-34-85 воздвигнут в 1980 году в память о танковой колонне «Советская Якутия»[3], которая воевала в составе 1-го Украинского фронта.В 2005 году, к 60-летию Победы, на общем постаменте с танком Т-34 была установлена скульптурная композиция «Проводы на фронт»",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Танк+Т-34-85"
+            },
+            {
+                id: 3,
+                name: "Бюст Н.С. Степанова",
+                coords: [62.037638, 129.715943],
+                description: "Бюст героя Великой Отечественной войны Н.С. Степанова",
+                fullDescription: "Николай Саввич Степанов (13 мая 1922 — 20 сентября 1992) — участник Великой Отечественной войны, пулемётчик 1-го мотострелкового батальона 45-й механизированной бригады 5-го механизированного корпуса 6-й танковой армии 2-го Украинского фронта, красноармеец. Герой Советского Союза ",
+                history: "Пулемётчик 1-го мотострелкового батальона красноармеец Николай Степанов одним из первых в батальоне на самодельном плоту с пулемётом переправился через реку Южный Буг в районе села Маньковка Бершадского района Винницкой области Украины и огнём прикрывал переправу стрелковых подразделений. Поддерживая наступление, уничтожил свыше десяти солдат и офицеров противника.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Бюст+Степанова"
+            },
+            {
+                id: 4,
+                name: "Памятник Ф.К. Попову",
+                coords: [62.044783, 129.740983],
+                description: "Мемориал в честь Ф.К. Попова, героя Великой Отечественной войны",
+                fullDescription: "Попов Фёдор Кузьмич родился в Мегино-Кангаласском улусе. До войны был бригадиром колхоза «Октябрь». В Великую Отечественную Войну был призван рядовым солдатом. Служил автоматчиком. Числился в в 3-й роте 467 полка 81 стрелковой дивизии. Один из якутян форсировавших Днепр и оставшихся в живых. Федор самоотверженно вступил в реку, переплыл её и атаковал траншею противника. В рукопашной схватке он один перебил 23 немецких солдат и офицера. Захватив ручной пулемет он открыл огонь по немецким силам проводящим контратаку. 3 октября немецкие солдаты проводили несколько атак по советским силам захватившим плацдарм. Федор проявив военную смекалку смог пробраться во фланг противника и истребить до 50 солдат и офицеров. В 1943 году в бою около деревни Глушец (Белоруссия) Федор был убит в возрасте 22 года. В 1944 году ему посмертно было присвоено звание Героя Советского Союза.",
+                history: "от 12 апреля 1944 г. улица Пролетарского была переименована в улицу Попова, решением горисполкома от 23 декабря 1981 г. улица Лермонтова, на участке от переулка Энергетиков до улицы Дзержинского, переименована в улицу Попова там и стоит памятник",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Памятник+Попову"
+            },
+            {
+                id: 5,
+                name: "Памятник Снайперам Якутии",
+                coords: [62.036895, 129.754737],
+                description: "Памятник легендарным снайперам из Якутии",
+                fullDescription: "Мемориал посвящен якутским снайперам, которые прославились своей меткостью и выдержкой на фронтах Великой Отечественной войны.",
+                history: "В мемориальном комплексе «Солдат Туймаады» г. Якутска в рамках празднования 75-летия Великой Победы 24 июня 2020 года состоялось торжественное открытие памятника собирательному образу якутского снайпера Великой Отечественной войны",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Снайперам+Якутии"
+            },
+            {
+                id: 6,
+                name: "Памятник вдовам и матерям",
+                coords: [62.034435, 129.723286],
+                description: "Памятник вдовам и матерям, потерявшим своих близких на войне",
+                fullDescription: "Посвящен памяти всех женщин, ожидавших своих отцов, сыновей, мужей и братьев с фронта, их беззаветной любви, преданности, вере, надежде, слезам и мольбам, а также радости от возвращения близких на Родину.",
+                history: "В Центральном округе в 2010 г. был построен многоквартирный дом для вдов участников Великой Отечественной войны. Руководство округа предложило возвести рядом с этим домом памятник У войны не женское лицо. Идея была поддержана Окружной администрацией, а также сообществом предпринимателей г. Якутска.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Вдовам+и+матерям"
+            },
+            {
+                id: 7,
+                name: "Памятник Солдатам Туймаады",
+                coords: [62.035594, 129.754054],
+                description: "Памятник воинам из Туймаады, павшим в годы войны",
+                fullDescription: "«Солдат Туймаады» — мемориальный комплекс в Якутске, посвящённый воинам-якутянам, призванным на Великую Отечественную войну.",
+                history: "Торжественное открытие мемориального комплекса «Солдат Туймаады» состоялось в столице республики Саха (Якутия) 2 сентября 2015 года в день окончания Второй мировой войны. Создание такого мемориала было идеей столичных властей, сооружён он был за счет бюджета города Якутска, а также добровольных пожертвований жителей города, предприятий и организаций в благотворительный фонд «Победа-70».",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Солдатам+Туймаады"
+            },
+            {
+                id: 8,
+                name: "Победы ради потрудившимся",
+                coords: [62.030016, 129.712144],
+                description: "Мемориал в честь тружеников тыла, обеспечивавших фронт",
+                fullDescription: "Памятник посвящен якутянам, которые в тяжелейших условиях работали в тылу, обеспечивая фронт продовольствием, оружием и теплой одеждой.",
+                history: "7 августа 2015 года на территории Градоякутского Никольского храма состоялась встреча Преосвященного епископа Якутского и Ленского Романа с представителями общественности по вопросу установки нового памятного знака.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Труженикам+тыла"
+            },
+            {
+                id: 9,
+                name: "Памятник воинам-журналистам",
+                coords: [62.028303, 129.729187],
+                description: "Памятник военным журналистам, павшим на полях сражений",
+                fullDescription: "В годы Великой Отечественной войны из Якутии на фронт отправились 139 журналистов. Они самоотверженно выполняли свой долг, защищая свою страну и рассказывая о происходящем на полях сражений. Они активно участвовали в жизни фронта, отправляли бойцам посылки из тёплых вещей, устраивали субботники. Публикуя сводки с фронтов, журналисты призывали население республики помочь Красной армии в борьбе с фашистскими захватчиками. Имена всех участников высечены на мемориальных плитах, установленных в сквере у Дома печати.",
+                history: "В канун 9 мая 2024 в Якутске почтили память воинов-журналистов, принимавших участие в Великой Отечественной войне от Якутии. Работники республиканских изданий и СМИ возложили цветы в мемориальном сквере у Дома печати",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Воинам+журналистам"
+            },
+            {
+                id: 10,
+                name: "Памятник Фёдору Кузьмичёву",
+                coords: [62.021591, 129.681189],
+                description: "Мемориал в честь Ф.К. Попова, героя Великой Отечественной войны",
+                fullDescription: "Попов Фёдор Кузьмич родился в Мегино-Кангаласском улусе. До войны был бригадиром колхоза «Октябрь». В Великую Отечественную Войну был призван рядовым солдатом. Служил автоматчиком. Числился в в 3-й роте 467 полка 81 стрелковой дивизии. Один из якутян форсировавших Днепр и оставшихся в живых. Федор самоотверженно вступил в реку, переплыл её и атаковал траншею противника. В рукопашной схватке он один перебил 23 немецких солдат и офицера. Захватив ручной пулемет он открыл огонь по немецким силам проводящим контратаку. 3 октября немецкие солдаты проводили несколько атак по советским силам захватившим плацдарм. Федор проявив военную смекалку смог пробраться во фланг противника и истребить до 50 солдат и офицеров. В 1943 году в бою около деревни Глушец (Белоруссия) Федор был убит в возрасте 22 года. В 1944 году ему посмертно было присвоено звание Героя Советского Союза.",
+                history: "от 12 апреля 1944 г. улица Пролетарского была переименована в улицу Попова, решением горисполкома от 23 декабря 1981 г. улица Лермонтова, на участке от переулка Энергетиков до улицы Дзержинского, переименована в улицу Попова сам памятник находиться на территории школы №20",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Фёдор+Кузьмичёв"
+            },
+            {
+                id: 11,
+                name: "Сквер Матери",
+                coords: [62.012952, 129.68434],
+                description: "Сквер, посвященный матерям, воспитавшим героев войны",
+                fullDescription: "Памятник посвящен матерям выстоявшим в годы Великой Отечественной войны. Прообразом памятника стала Феврония Николаевна Малгина из таёжного села Баяга Таттинского улуса. У Февронии Николаевны Малгиной были призваны пять сыновей на войну и ни один из них не смог вернуться домой. Памятник матери отлитый из бронзы и установленный в центре сквера, представляет собой композицию женщины с ребёнком, олицетворение Родины. Три сокола летящие ввысь являются символом сыновей безвозвратно ушедших на войну. Памятник знаменует собой Победу, верховенство добра над злом и продолжение жизни.Головной убор Матери схож со шлемом. Заяц в ногах женщины дал пропитание и жизнь тысячам якутских",
+                history: "В марте 2010 года мэром Якутска Юрием Заболевом утверждено распоряжение по проектированию памятника в честь якустких матерей. Проект конкурса был посвящён 65 годовщине Победы в Великой Отечественной войне, открытие было запланировано на 9 мая 2010 года.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Сквер+Матери"
+            },
+            {
+                id: 12,
+                name: "Памятник К.К. Красноярову",
+                coords: [62.015473, 129.72041],
+                description: "Памятник герою Клавдию Карповичу Красноярову",
+                fullDescription: "Клавдий Карпович Краснояров получил звание Героя Советского Союза посмертно. Уроженец Омской области, до Великой Отечественной Войны он работал транспортником Ленского речного пароходства. Был призван на фронт рядовым стрелком. Участник Курской битвы. 23 января 1943 года воинская часть, в которой служил Клавдий Карпович Краснояров, форсировала Днепр. Клавдий Краснояров и еще несколько красноармейцев в числе первых переправились через Днепр и достигли правого берега. Выйдя через опушку леса они через поляну увидели укрепления врага. На правом фланге четыре дзота красноармейцы смогли заблокировать. На левом фланге оставался единственный дзот оказывающий сопротивление. Краснояров смог подползти до данного дзота и кинуть в неё противотанковую гранату. Немецкий пулемет в дзоте ненадолго замолк, но через время возобновил огонь. Краснояров самоотверженно закрыл дзот своим телом. За данный подвиг в 1944 году ему было присвоено звание Героя Советского Союза.",
+                history: "Памятник Красноярову пережил несколько переносов. В первый раз памятник пришлось демонтировать по причине строительства церкви, во второй раз — по причине строительства жилого дома. 2 сентября 2015 года в рамках празднования 70-летия Победы в Великой Отечественной Войне в присутствии жителей Якутска состоялось повторное открытие памятника Красноярову. Памятник нашел место на пересечении на пересечении улицы Красноярова и проспекта Ленина. Там же был открыт и сквер посвящённый Красноярову[3].",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Краснояров"
+            },
+            {
+                id: 13,
+                name: "Памятник 'Слава победителям'",
+                coords: [62.019961, 129.706597],
+                description: "Мемориал 'Слава победителям' в честь воинов-победителей",
+                fullDescription: "В память о сотрудниках, преподавателях и студентах университета, ставших участниками Великой Отечественной войны.",
+                history: "Обелиск был открыт в честь 70-летия Победы в Великой Отечественной войне на территории студенческого городка в память о сотрудниках, преподавателях и студентах университета, ставших участниками Великой Отечественной войны.Впервые мемориал был построен в 1995 году, тогда на нем были высечены имена 97 ветеранов. К юбилею Победы мемориал обновили. Здесь увековечены имена 383 ветеранов Великой Отечественной войны — работников и студентов главного вуза республики, в разные годы носившего имя Якутского педагогического института, Якутского учительского института, Педагогического рабочего факультета, Якутского государственного университета и Северо-Восточного федерального университета. семей",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Слава+победителям"
+            },
+            {
+                id: 14,
+                name: "Скульптура 'Карась'",
+                coords: [62.031151, 129.730197],
+                description: "Скульптура 'Карась' - символ стойкости и выживания в трудные времена",
+                fullDescription: "Скульптура в дань уважения якутскому карасю, благодаря которому народ саха смог пережить тяжелый голод в годы Великой Отечественной войны.",
+                history: "17 сентября 2012 г. на мосту через Талое озеро, в честь празднования 380-летнего юбилея г. Якутска был презентован единственный в мире памятник карасю.",
+                image: "https://via.placeholder.com/600x400/4a6572/ffffff?text=Скульптура+Карась"
+            }
+        ];
+
+       
+        // Данные о линиях
+        const routeLines = [
+            {
+                id: 15,
+                name: "Улица Асямова ",
+                description: "Улица героя",
+                fullDescription: "С. А. Асямов родился в г. Красноярске. Летчик Якутской авиагруппы, был командиром полярной авиации. Участник Великой Отечественной войны, командир корабля 746 авиационного полка 3-й авиационной дивизии дальнего действия. Звание Героя Советского Союза присвоено 20 июня 1942 года посмертно. Награжден орденами Ленина, Красного Знамени, медалью.",
+                history: "Улицу назвали в 1977 году.",
+                images: [
+                    "https://via.placeholder.com/600x400/2a9d8f/ffffff?text=Улица+Асямова+1",
+                    "https://via.placeholder.com/600x400/2a9d8f/ffffff?text=Улица+Асямова+2",
+                    "https://via.placeholder.com/600x400/2a9d8f/ffffff?text=Улица+Асямова+3"
+                ],
+                coordinates: [
+                    [62.045673, 129.706472],
+                    [62.042735, 129.710143],
+                    [62.042775, 129.710391],
+                    [62.043573, 129.710629],
+                    [62.043688, 129.709975]
+                ],
+                color: '#2a9d8f'
+            },
+            {
+                id: 16,
+                name: "Улица Колбунова ",
+                description: "Улица героя",
+                fullDescription: "В. А. Колбунов родился в деревне Ростовка Большереченского района Омской области. До войны работал шахтером на Кангаласских угольных копях, приисках Аллах Юня Якутской АССР. Участник Великой Отечественной войны, старшина, командир отделения пешей разведки 1-го батальона 135-й отдельной стрелковой бригады, затем 467-го полка 81-й стрелковой дивизии. Участник парада Победы в Москве. Звание Героя Советского Союза присвоено 15 января 1944 года. Награжден орденами Ленина, Отечественной войны I степени, медалями.",
+                history: "Присвоено имя 20 апреля 2000 года. Улица находится в Кангалассах.",
+                images: [
+                    "https://via.placeholder.com/600x400/e76f51/ffffff?text=Улица+Колбунова+1",
+                    "https://via.placeholder.com/600x400/e76f51/ffffff?text=Улица+Колбунова+2"
+                ],
+                coordinates: [
+                    [62.353513, 129.976975],
+                    [62.353025, 129.978585]
+                ],
+                color: '#e76f51'
+            },
+            {
+                id: 17,
+                name: "Улица Кондакова ",
+                description: "Улица героя",
+                fullDescription: "Н. А. Кондаков родился в Жемконском наслеге Вилюйского района Якутской АССР. Участник Великой Отечественной войны, старший лейтенант, командир огневого взвода 1073-го армейского истребительно-противотанкового артиллерийского полка 5-й гвардейской армии 1-го Украинского фронта. Звание Героя Советского Союза присвоено 5 мая 1990 года, посмертно. Награжден орденами Ленина, Красного Знамени, Красной Звезды, медалями.",
+                history: "Присвоено имя в 2005 году.",
+                images: [
+                    "https://via.placeholder.com/600x400/9d4edd/ffffff?text=Улица+Кондакова+1",
+                    "https://via.placeholder.com/600x400/9d4edd/ffffff?text=Улица+Кондакова+2",
+                    "https://via.placeholder.com/600x400/9d4edd/ffffff?text=Улица+Кондакова+3"
+                ],
+                coordinates: [
+                    [61.978074, 129.641473],
+                    [61.976652, 129.639675],
+                    [61.975191, 129.643138],
+                    [61.974488, 129.64391],
+                    [61.973223, 129.645281],
+                    [61.972084, 129.646195],
+                    [61.975207, 129.643098],
+                    [61.974064, 129.641022],
+                    [61.974514, 129.643915],
+                    [61.973826, 129.642809],
+                    [61.972892, 129.64383],
+                    [61.973215, 129.645259],
+                    [61.973005, 129.644345],
+                    [61.971485, 129.645902],
+                    [61.970353, 129.644633]
+                ],
+                color: '#9d4edd'
+            },
+
+            {
+        id: 18,
+        name: "Переулок Космачёва ",
+        description: "Улица героя",
+        fullDescription: "М. М. Космачёв родился в 1920 году в Лениградской области. До войны работал слесарем-монтажником Якутской электростанции на Алдане. Участник Великой Отечественной войны, старший сержант, механик-водитель танка Т-34 21-й гвардейской танковой бригады 6-й гвардейской танковой армии2-го Украинского фронта. Звание Героя Советского Союза присвоено 24 марта 1944 года. Награжден орденом Ленина.",
+        history: "Присвоено имя в 2005 году.",
+        images: [
+            "https://via.placeholder.com/600x400/ff6b6b/ffffff?text=Переулок+Космачёва+1",
+            "https://via.placeholder.com/600x400/ff6b6b/ffffff?text=Переулок+Космачёва+2"
+        ],
+        coordinates: [
+            [62.067722, 129.716397],
+         [62.068731, 129.717982]
+        ],
+        color: '#ff6b6b'
+            },
+            {
+        id: 19,
+        name: "Улица Красноярова ",
+         description: "Улица героя",
+        fullDescription: "К. К. Краснояров родился в деревне Исаковка Горьковского района Омской области. С 1931 г. жил и работал в г. Якутске, работал транспортником Ленского речного пароходства. Участник Великой Отечественной войны, стрелок 1181-го стрелкового полка 356-й стрелковой дивизии 61-й армии Центрального фронта. Звание Героя Советского Союза присвоено 24 марта 1944 года, посмертно. Награжден орденом Ленина.",
+        history: "Присвоено имя в 1944 году",
+        images: [
+            "https://via.placeholder.com/600x400/4ecdc4/ffffff?text=Улица+Красноярова+1",
+            "https://via.placeholder.com/600x400/4ecdc4/ffffff?text=Улица+Красноярова+2"
+        ],
+        coordinates: [
+             [62.01361, 129.705408],
+            [62.015667, 129.724257]
+    ],
+    color: '#4ecdc4'
+            },
+{
+    id: 20,
+    name: "Улица Миронова ",
+    description: "Улица героя",
+    fullDescription: "А. А. Миронов родился в Кэнтикском наслеге Верхневилюйского района Якутской АССР. Участник Великой Отечественной войны, гвардии сержант, снайпер 247-го гвардейского стрелкового полка 84-й гвардейской стрелковой дивизии 16-й (с 1 мая 1943 года 11-й гвардейской) армии Западного фронта. Звание Героя Советского Союза присвоено 5 мая 1990 года, посмертно. Награжден орденами Ленина, Отечественной войны I степени, Красной Звезды, медалями.",
+    history: "Присвоено имя в 2005 году.",
+    images: [
+        "https://via.placeholder.com/600x400/ff9f1c/ffffff?text=Улица+Миронова+1",
+        "https://via.placeholder.com/600x400/ff9f1c/ffffff?text=Улица+Миронова+2"
+    ],
+    coordinates: [
+        [62.068852, 129.729961],
+        [62.072499, 129.730251]
+    ],
+    color: '#ff9f1c'
+},
+{
+    id: 21,
+    name: "Улица Охлопкова ",
+    description: "Улица героя",
+    fullDescription: "Ф. М. Охлопков – уроженец Томпонского района. Участник Великой Отечественной войны, сержант, снайпер в частях Калининского, 1-го Прибалтийского фронтов. Звание Героя Советского Союза присвоено 6 мая 1965 года. Награжден орденами Ленина, Красного Знамени, Отечественной войны II степени, двумя орденами Красной Звезды, медалями.",
+    history: "Присвоено имя в 1968 году.",
+    images: [
+        "https://via.placeholder.com/600x400/7209b7/ffffff?text=Улица+Охлопкова+1",
+        "https://via.placeholder.com/600x400/7209b7/ffffff?text=Улица+Охлопкова+2"
+    ],
+    coordinates: [
+        [62.030563, 129.674038],
+        [62.032242, 129.675946]
+    ],
+    color: '#7209b7'
+},
+{
+    id: 22,
+    name: "Улица Фёдора Попова ",
+    description: "Улица героя",
+    fullDescription: "Ф. К. Попов родился в Батаринском наслеге Мегино-Кангаласского района Якутской АССР. Участник Великой Отечественной войны, рядовой, стрелок 3-й роты 1-го батальона 467-го стрелкового полка 81-й стрелковой дивизии 61-й армии. Звание Героя Советского Союза 15 февраля 1944 года, посмертно. Награжден орденом Ленина.",
+    history: "Присвоено имя в 1944 году.",
+    images: [
+        "https://via.placeholder.com/600x400/06d6a0/ffffff?text=Улица+Попова+1",
+        "https://via.placeholder.com/600x400/06d6a0/ffffff?text=Улица+Попова+2"
+    ],
+    coordinates: [
+        [62.044581, 129.740673],
+        [62.045102, 129.762305]
+    ],
+    color: '#06d6a0'
+},
+{
+    id: 23,
+    name: "Переулок Сапожникова ",
+    description: "Улица героя",
+    fullDescription: "В. В. Сапожников родился в Якутске. Участник Великой Отечественной войны, подполковник, заместитель командира эскадрильи 23-го авиационного полка 63-й авиационной армии. Звание Героя Советского Союза присвоено 19 августа 1944 года. Награжден двумя орденами Ленина, двумя орденами Красного Знамени, тремя орденами Красной Звезды, медалями.",
+    history: "Присвоено имя в 2005 году.",
+    images: [
+        "https://via.placeholder.com/600x400/ef476f/ffffff?text=Переулок+Сапожникова+1",
+        "https://via.placeholder.com/600x400/ef476f/ffffff?text=Переулок+Сапожникова+2"
+    ],
+    coordinates: [
+        [62.068389, 129.720029],
+        [62.067133, 129.717987],
+        [62.067714, 129.716431]
+    ],
+    color: '#ef476f'
+},
+{
+    id: 24,
+    name: "Улица Степанова ",
+    description: "Улица героя",
+    fullDescription: "Н. С. Степанов родился в Ергетском наслеге (ныне Арылахском) наслеге Вилюйского района Якутской АССР. Участник Великой Отечественной войны, пулеметчик 1-го мотострелкового батальона 45-й механизированной бригады 5-го механизированного корпуса 2-го Украинского фронта. Звание Героя Советского Союза присвоено 5 мая 1990 года. Награжден орденами Ленина, Отечественной войны I степени, Красной Звезды, медалями.",
+    history: "Присвоено имя в 2005 году.",
+    images: [
+        "https://via.placeholder.com/600x400/118ab2/ffffff?text=Улица+Степанова+1",
+        "https://via.placeholder.com/600x400/118ab2/ffffff?text=Улица+Степанова+2"
+    ],
+    coordinates: [
+        [62.067604, 129.716335],
+        [62.06839, 129.714211],
+        [62.069549, 129.712468]
+    ],
+    color: '#118ab2'
+},
+{
+    id: 25,
+    name: "Улица Стрекаловского ",
+    description: "Улица героя",
+    fullDescription: "М. М. Стрекаловский родился в Оспехском наслеге ныне Усть-Алданского улуса. Участник Великой Отечественной войны, красноармеец 120 полка 69-й стрелковой Севской дважды Краснознаменной, ордена Суворова дивизии. Звание Героя Российской Федерации присвоено 27 марта 1996 года, посмертно.Вернувшись на родину после войны, работал бухгалтером, заведующим сберкассой, парторгом совхоза, лесничим.",
+    history: "Присвоено имя в 2005 году.",
+    images: [
+        "https://via.placeholder.com/600x400/ffd166/ffffff?text=Улица+Стрекаловского+1",
+        "https://via.placeholder.com/600x400/ffd166/ffffff?text=Улица+Стрекаловского+2"
+    ],
+    coordinates: [
+        [62.069594, 129.725872],
+        [62.07261, 129.736492]
+    ],
+    color: '#ffd166'
+},
+{
+    id: 26,
+    name: "Улица Шавкунова ",
+    description: "Улица героя",
+    fullDescription: "Г. И. Шавкунов родился на Кургане, с 1932 г. жил в Якутии: в Аллах-Юне, Кангалассах и Якутске. Участник Великой Отечественной войны, сапер 195-го отдельного саперного батальона 139-й стрелковой дивизии 50-й армии 2-го Белорусского фронта. Звание Героя Советского Союза присвоено 24 марта 1945 года, посмертно. Награжден орденом Ленина, медалями.",
+    history: "Присвоено имя в 1950 году.",
+    images: [
+        "https://via.placeholder.com/600x400/073b4c/ffffff?text=Улица+Шавкунова+1",
+        "https://via.placeholder.com/600x400/073b4c/ffffff?text=Улица+Шавкунова+2"
+    ],
+    coordinates: [
+        [62.031802, 129.715363],
+        [62.033286, 129.718703],
+        [62.034454, 129.721872],
+        [62.034711, 129.722396],
+        [62.034955, 129.722528],
+        [62.035408, 129.723574]
+    ],
+    color: '#073b4c'
+},
+{
+    id: 27,
+    name: "Улица Чусовского ",
+    description: "Улица героя",
+    fullDescription: "Н. Н. Чусовского родился в селе Александровка Кочайского наслега Нюрбинского района Якутской АССР. Участник Великой Отечественной войны, гвардии капитан, командир батальона стрелкового полка дивизии 8-й гвардейской армии 1-го Белорусского фронта. Звание Героя Советского Союза присвоено 31 мая 1945 года. Награжден орденом Ленина, Красного Знамени, Отечественной войны II степени, Красной Звезды, медалями.",
+    history: "Присвоено имя в 2005 году.",
+    images: [
+        "https://via.placeholder.com/600x400/9b5de5/ffffff?text=Улица+Чусовского+1",
+        "https://via.placeholder.com/600x400/9b5de5/ffffff?text=Улица+Чусовского+2"
+    ],
+    coordinates: [
+        [62.069489, 129.711523],
+        [62.069574, 129.71218],
+        [62.069521, 129.712753],
+        [62.070089, 129.713921],
+        [62.068159, 129.72378],
+        [62.068304, 129.724002],
+        [62.067433, 129.72865],
+        [62.06757, 129.729515],
+        [62.067767, 129.72676],
+        [62.066988, 129.726138],
+        [62.067684, 129.72222]
+    ],
+    color: '#9b5de5'
+},
+   ];
+
+
+        let map;
+        let markers = [];
+        let routeLayers = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация карты
+            initMap();
+            
+            // Инициализация анимаций
+            initAnimations();
+            
+            // Инициализация кнопки прокрутки
+            initScrollToTop();
+        });
+        
+        function initMap() {
+            const yakutskCenter = [62.0274, 129.7315];
+            
+            map = L.map('monuments-map').setView(yakutskCenter, 12);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Создание маркеров для памятников
+            monuments.forEach((monument, index) => {
+                const warIcon = L.divIcon({
+                    className: 'war-marker',
+                    html: '<div style="background-color: #e63946; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                
+                const marker = L.marker(monument.coords, {icon: warIcon}).addTo(map);
+                
+                // Содержимое попапа
+                const popupContent = createPopupContent(index);
+                marker.bindPopup(popupContent);
+                
+                // Обработчик клика по маркеру
+                marker.on('click', function() {
+                    showMonumentDetail(index);
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Добавление линий маршрутов
+            routeLines.forEach((route, index) => {
+                const routeLayer = L.polyline(route.coordinates, {
+                    color: route.color,
+                    weight: 6,
+                    opacity: 0.8,
+                    lineJoin: 'round'
+                }).addTo(map);
+                
+                // Добавление обработчика клика для линии
+                routeLayer.on('click', function(e) {
+                    showRouteDetail(index);
+                });
+                
+                // Добавление попапа для линии
+                routeLayer.bindPopup(`
+                    <div class="popup-content">
+                        <h3>${route.name}</h3>
+                        <p>${route.description}</p>
+                        <img src="${route.images[0]}" alt="${route.name}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+                        <button class="details-btn" onclick="showRouteDetail(${index})">Подробнее</button>
+                    </div>
+                `);
+                
+                routeLayers.push(routeLayer);
+            });
+            
+            // Добавление легенды
+            addLegend();
+        }
+        
+        function initAnimations() {
+            // Анимация появления элементов при скролле
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            
+            // Наблюдаем за элементами таймлайна
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+        
+        function initScrollToTop() {
+            const scrollButton = document.getElementById('scrollToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollButton.classList.add('visible');
+                } else {
+                    scrollButton.classList.remove('visible');
+                }
+            });
+            
+            scrollButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+        
+        function addLegend() {
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <div style="background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+                        <h4 style="margin: 0 0 5px 0;">Объекты на карте</h4>
+                        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <div style="width: 12px; height: 12px; background: #e63946; border-radius: 50%; margin-right: 5px;"></div>
+                            <span>Памятник/мемориал</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <div style="width: 12px; height: 4px; background: #2a9d8f; margin-right: 5px;"></div>
+                            <span>Исторический маршрут</span>
+                        </div>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+        }
+        
+        // Функция для создания содержимого попапа
+        function createPopupContent(monumentIndex) {
+            const monument = monuments[monumentIndex];
+            let popupContent = `
+                <div class="popup-content">
+                    <h3>${monument.name}</h3>
+                    <p>${monument.description}</p>
+                    <img src="${monument.image}" alt="${monument.name}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+                    <button class="details-btn" onclick="showMonumentDetail(${monumentIndex})">Подробнее</button>
+                </div>
+            `;
+            return popupContent;
+        }
+        
+        // Функция для показа детальной информации о памятнике
+        function showMonumentDetail(monumentIndex) {
+            const monument = monuments[monumentIndex];
+            const modal = document.getElementById('monument-modal');
+            const content = document.getElementById('monument-content');
+            
+            let html = `
+                <div class="monument-header">
+                    <h1>${monument.name}</h1>
+                    <p>Координаты: ${monument.coords[0].toFixed(6)}, ${monument.coords[1].toFixed(6)}</p>
+                </div>
+                
+                <div class="monument-gallery">
+                    <img src="${monument.image}" alt="${monument.name}">
+            `;
+            
+ if (monumentIndex === 0) { // Памятник Кондакову
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczNGX6WuNm_RlZgML7QnHJ-ue1jbI4EnPzlPDViTa7B3_U-XLi8RGxoQkcuuSofNacQuY6lbKFv_AjCkT981auG5IS1_5nbartrR_M3GlD9WiDjR6oeFKHTMJ4P97yV66q-zQEpiuMPro_cdINs0rcH8=w1280-h853-s-no-gm?authuser=0" alt="Фото памятника Кондакову 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPGZ1HdU54oYIS5nZD3zEzHTYBC6WOGZVHKB3Ravf1LfxFQrcr7E5dbSMfMYRb2ACxPa626wOsC_3XlYX6W_sGbVgZsrUVENczkoYToFCnqcjOeYTD5GaiWmdV-QC5Porfqetfwu6LRO59DxtO4WZFJ=w1280-h853-s-no-gm?authuser=0" alt="Фото памятника Кондакову 2">
+                `;
+            } else if (monumentIndex === 1) { // Танк Т-34
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOBsVCtjTLt7nPqtDdh5f51_qIB9NNqPoSB3uXwcunWvqr6-C0V2MlvJGT8sJlkcHDyuzbt3mYlJ8DgftPIQB_OR43FA4BSAB8AkDP1PhbQCZH9NExzjgS91YhPbBnKAXV7X_diExZaURCxnCfFY5yg=w1280-h853-s-no-gm?authuser=0" alt="Танк Т-34">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMLfvmf5vhbKoGIhEZdmYYtFWHaHHQxxEuXrblAUHIXmUiT4WUs3ivisnW4940Yu0a6UEVgbRF5s7FKHSOGsxOSRK-8znKRv0m79I47Qar365GH7ARLBy1w4UDlGWFYNM3UQenVLs5Q3sRBNn-xe7Pd=w1280-h853-s-no-gm?authuser=0" alt="Скульптура матери">
+                `;
+            } else if (monumentIndex === 2) { // Бюст Степанова
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOBXP7eFGqu7f18_vbuE-bk3Fip6J6PRmH2gCq5KBxtU47qzYiTNEnN5zwZYukDmEFIhgGdp_j1e0FabeGWTt4H9uQ9fsg5Mnm2qQ3vbq-hBlP-VV76iSlGMe3muIOcBOqDXtCTPLwBfUoddsVNJxLu=w1280-h853-s-no-gm?authuser=0" alt="Бюст Степанова">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczP6rC58Nwwaea7dXi1sgdaubI4jdv445-DCqVftZovCnSIBQCW_YVy-yMlptl4S0dbAlI3hTUIvZ-x5FqIFiPsI128x08XYIYdW2cB4gmJwsqcQArTCbv4PSIvgNTdakcRzvJ_0fz3pz7jHCTNqeVxy=w1280-h853-s-no-gm?authuser=0" alt="Мемориальная доска">
+                `;
+            } else if (monumentIndex === 3) { // Памятник Попову
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMs-UILah2SQJaFhWUDdobiSjUpmmpX15fyWi58nlepWzQsPXUERP-JNZkacQYxNc2EWf9WcbF5cKfMStUlIs7jFTsMFqzsRjdKcYCPltqAQziNCDbqtJjUTbq0maIPAUqxe5cupkX_yStoQ1FmaxwI=w1280-h853-s-no-gm?authuser=0" alt="Памятник Попову">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczO_H2Z3XAmqNepFfBmMYNp2t4yinETGlrI844k_eaxqDDtgQ4SRj3L3BNP_IS4qwt-j-U_FeTaOu8zB9pJja4dlSlOeckUZ_HvIjOFeH1Phae9KrlVGFa52mwDPucAgkgMTF1RLBZL3ubyI4OmdrV8v=w1280-h853-s-no-gm?authuser=0" alt="Историческое фото">
+                `;
+            } else if (monumentIndex === 4) { // Снайперы
+                html += `
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczMfiqP-ZSTpQU7QjzYVjrCYRru2F8itWrET9RIizfckuHUud3n8N653LK7Ds8THClBLnt8y3dMja35HlmKCeFchzktcxw0mOxhdre95tbqyjdFeO3n4_gmU_l8IAWQTu9qQQSb5CyJ6CEAOWZXnGZ4t=w1280-h853-s-no-gm?authuser=0" alt="Вечный огонь">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOIFajL13Y7lyuqpRvArJQ3GHRYv1EfjIjN0T-9QRkZldN_ARQa95qPryWoHf5PuR7LuxwhzeM9TFhMDsqgzq7dszzUVJe9Xbr6eNG71hFcbONXfV9tOzg6bYC7jNmsB_cG_LA5hYdwi6pSMLBa0k04=w1280-h853-s-no-gm?authuser=0" alt="Мемориальные плиты">
+                `;
+            //} else if (monumentIndex === 5) { // Памяти павших
+               //html += `
+                    //<img src="https://lh3.googleusercontent.com/pw/AP1GczMfiqP-ZSTpQU7QjzYVjrCYRru2F8itWrET9RIizfckuHUud3n8N653LK7Ds8THClBLnt8y3dMja35HlmKCeFchzktcxw0mOxhdre95tbqyjdFeO3n4_gmU_l8IAWQTu9qQQSb5CyJ6CEAOWZXnGZ4t=w1280-h853-s-no-gm?authuser=0" alt="Вечный огонь">
+                    //<img src="https://lh3.googleusercontent.com/pw/AP1GczOIFajL13Y7lyuqpRvArJQ3GHRYv1EfjIjN0T-9QRkZldN_ARQa95qPryWoHf5PuR7LuxwhzeM9TFhMDsqgzq7dszzUVJe9Xbr6eNG71hFcbONXfV9tOzg6bYC7jNmsB_cG_LA5hYdwi6pSMLBa0k04=w1280-h853-s-no-gm?authuser=0" alt="Мемориальные плиты">
+               // `;
+            } else if (monumentIndex === 5) { // Вдовам и матерям
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOqO3MMcSNIGWt7WX2MuqqNMvIpF9tYWkn_eL-ubWtCc3iW-AnH-sLhsr-jXc7NR73qpyNMSPz_QtYo7akxO7aqj8EkKHmhAHq9iz3_0nbo8cEIkI4BMyG7Gv8AesDDu9X1axiHYWg_TOB4T6L2P7zl=w1280-h853-s-no-gm?authuser=0" alt="Памятник вдовам 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczM5Qbf3TQvewgwlmZHRt26uFqpJW2bEfUKMagH21fxtIo5rz-3lQ3YXIg-eJ2fuyyITNTD5u0wsQd8rPuiMT_VG1i21a_AN71zn7IcBIVgrVqzzIFyFlfIKvG0zCATnNchwVlcLismzDV4w165R61pC=w1280-h853-s-no-gm?authuser=0" alt="Памятник вдовам 2">
+                `;
+            } else if (monumentIndex === 6) { // Солдатам Туймаады
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczM4xRabjpUL615fr_eE1PcoEW0bECW7kjUrV1QppO1X2xbjS5NR_QJtdhHUNZ4pCa6oW6v7XLPsD8o7zytXQz5xNEaeBkKGtv-1KptfMzSNp8uPUN0KHxYOk3QtwzPLt5ZuwcJT1m_8cMmglJLG5w6O=w1280-h853-s-no-gm?authuser=0" alt="Памятник солдатам 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczP88uwoDxUdt68pmJxpYD7C2SeR7OwwI8WdY4e16psVqoq8-lYo1-w3qWOcZ7vvLlIf7QtDyoTuEebrLV3r7I6Yi3VKP0GrfzIS-82dtt2A0wB669QS-z_VBs8W9KyECrOas_qxVLlWF4D-s8TNxRM-=w1280-h853-s-no-gm?authuser=0" alt="Памятник солдатам 2">
+                `;
+            } else if (monumentIndex === 7) { // Труженикам тыла
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPXj7UonYQj_1IUTcCoDNlPvj4JP5RvspVDaFHyCp8Dq8AVjy-Q4SA3PNbhDqO_R3a1P6r7UeC50VN0ZW-C2D4U38EUFdONpWAEZfZaIKcuJXHkRAWT_vsMMfKWO_FVNryWJJUxH4m92fi9-kf1OCfz=w1280-h853-s-no-gm?authuser=0" alt="Памятник труженикам 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczO2T334kda3DVH2k26JmdAlGUlZZaisc6PbaPnz2jZXS7EymEhhHzi_zkusIcPfucZMr1Ss8TaQxt8uhoKnNn7jTecYH2ewRrDwdmVyC0414kLfG5IM-o_vXVv943hMhgCuEF8kWUmXp640PycXJYz1=w1280-h853-s-no-gm?authuser=0" alt="Памятник труженикам 2">
+                `;
+            } else if (monumentIndex === 8) { // Журналистам
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMlE-qad8B7MJZbofj-sGFLyMnmDU71pp1-HD0hhMtK3eX5BdDwSvsFMgLcFcpbEjnd7hC2E5aRLP5fyj9hOGK5eROq0i3jHtUeIHsmXl_r5lHl_MrdftRMrzRamHPFUWp5Hw82HVfDoUBLun3a8KJx=w1280-h853-s-no-gm?authuser=0" alt="Памятник журналистам 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczORWWFlG8Pgmoaex8dBBLd5IcmsXYr0tHWHDh-fOC5auAo7T4xFhzBbYEZ0aWG2LFtrEYEwBU-UMdX8Tfhe2fy0SBQEF-Aa1JDpyFzwmq97WnRSJcUpvWX-2rkzpigyKwTdx1zhbrZTnXopL0kJfvcI=w1280-h853-s-no-gm?authuser=0" alt="Памятник журналистам 2">
+                `;
+            } else if (monumentIndex === 9) { // Кузьмичёву
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPbityzsujZJBLWnXaDNuTUQfeFc0keNLiSVFUiAvD8_8AirwULqzCaktCY2YdtRDI3h_K4WTW-Pq-ieo4ydA0ePEI5BSyb5U4BPr7RF6O-pKU0miLL8t1z8b0BVCe9ofm9Cwmxh5kNZCecmA56EFi5=w1280-h591-s-no-gm?authuser=0" alt="Памятник Кузьмичёву 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczN0e0K88gJVBKjzvhwd5i8cewC8BllEAVwlYJcwzD8GIMcZVVewUWJKS8ND1i-TYhd_szlnUA9dTSyw-Wg8UkEIio41hNZp3_c0RPz40nLFCg1BHL5_8jlKHjy31KBQUZMTBZiydPBLqq5zOcntBRvr=w1280-h591-s-no-gm?authuser=0" alt="Памятник Кузьмичёву 2">
+                `;
+            } else if (monumentIndex === 10) { // Сквер Матери
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOjrmShXzpUsPcykM_MTlzgDKpmpTHKDMXZK16okjFdCqPZ1tJqoSz_T_JoaAgienXV6aXo3jiltwkW3boFpQFapP4YtqQlk4YwPCa_Dnn9jI6FvCWgFtlQ6ZSlgBIZosKoK_jP6cv7hW8f0Z_PSKtJ=w1280-h591-s-no-gm?authuser=0" alt="Сквер Матери 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPSzNsdJ4UBzL2vQf2fxV1pQX6Uq-2aUJlUXXoGlyiVtmwby-_J9f28Q9ej8x23fdXVqw3bUoQNipV0zcA0cWdAFS_Nnd822qV_p6Hu9Beu66TPlUcZ2OHmyYncgdE8pJfu_88c6rMNtYlnUhK2Wkb8=w1280-h591-s-no-gm?authuser=0" alt="Сквер Матери 2">
+                `;
+            } else if (monumentIndex === 11) { // Красноярову
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczPVI4645uflTZDN147UxkWo3gbz3NNCih86ONoWxmcVEEbWg3rfXJy6Qb_BgvXjodeOir_Ewusmlas4YFFfDvdFTjBLFUE3MoF8t23SxyYLt2o8w_xevap5RaCCU9lBWb1ZYJs-scSmQl00eSuhgVmP=w1280-h591-s-no-gm?authuser=0" alt="Памятник Красноярову 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczN__Haur1tkAtMuK1Ke6-AUy92xTVEZX9-48QXyi8yrRi23Z1d3GvE7tSf06P6mJAtYqtz9Ivzet-wTper6op0Cie22pfyz6oR_mx5wswvgdjNhwkG_ZvrAk8W3cPt3JI54UT36PI9O87QG-rEDo4dx=w1280-h591-s-no-gm?authuser=0" alt="Памятник Красноярову 2">
+                `;
+            } else if (monumentIndex === 12) { // Слава победителям
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczMO8pZfFzaVrupbAO9oVVNxRuN6_-r-0uOKPV2-ku6d6VcAW-z3kGHuQ-xyLUhIaPizh6zvo__RizuouDMncW3ltOuBdi4sjW_j8IKW3_wsKl1kHeFq8QfsfvcWfc-xwQPevVkbvINC3YYG1NYceBYT=w1280-h591-s-no-gm?authuser=0" alt="Памятник победителям 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczP3soPRrSLp6ZD4H40zn39BPKqOgW1BzFvsMDC3UUjFRKDeRW4HLz5mTVxZGiggnYBNruBcVB8S3jTpg3TFKT2G4zDO9ChlXV33AR4zyaYUr2Yp5mHGicWUCMlfDT1ZVk2an17A7xxrluZ7t3nDYg9s=w1280-h591-s-no-gm?authuser=0" alt="Памятник победителям 2">
+                `;
+            } else if (monumentIndex === 13) { // Карась
+                html += `
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczN_JX1ZaDjXEtcoEXoSV5i_ucYEZUV_UIcIXrkwyzQCJJWL1qnIajJNu40Rhsd1GTii2GYsMx6_h7ptnlHkVrctXCBIXpAriZ9Q_t7ml_vz2yvbF58YaPANRzD5lyft_8EUDLNafiyf6FzbZi1hvjou=w1280-h853-s-no-gm?authuser=0" alt="Скульптура Карась 1">
+                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOUTAUv1DgOodUkRJmOO4blPUbnH2s6dYWRuMoqx2ugIRD9qZb4XjvPT6Txh3OnffDEvIXyZnLX698VonsrrfMfUxxdB4NkK3lu1kPOqT51rZZqkjD65VpIrgSaqKuhBy4Qih5lkHXSxu-UltIR6lzb=w1280-h853-s-no-gm?authuser=0" alt="Скульптура Карась 2">
+                `;
+            } 
+  
+            
+            html += `</div>`;
+            
+            html += `
+                <div class="monument-info">
+                    <h2>Описание</h2>
+                    <p>${monument.fullDescription}</p>
+                    
+                    <h2>История</h2>
+                    <p>${monument.history}</p>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Функция для показа детальной информации о маршруте
+        function showRouteDetail(routeIndex) {
+            const route = routeLines[routeIndex];
+            const modal = document.getElementById('monument-modal');
+            const content = document.getElementById('monument-content');
+            
+            let html = `
+                <div class="monument-header">
+                    <h1>${route.name}</h1>
+                    <p>Исторический маршрут в Якутске</p>
+                </div>
+                
+                <div class="monument-gallery">
+            `;
+            
+            // Добавляем все изображения маршрута
+            route.images.forEach((image, index) => {
+                html += `<img src="${image}" alt="${route.name} ${index + 1}">`;
+            });
+            
+            html += `</div>`;
+            
+            html += `
+                <div class="monument-info">
+                    <h2>Описание</h2>
+                    <p>${route.fullDescription}</p>
+                    
+                    <h2>История</h2>
+                    <p>${route.history}</p>
+                    
+                    <h2>Точки маршрута</h2>
+                    <p>Маршрут проходит через следующие координаты:</p>
+                    <ul>
+            `;
+            
+            route.coordinates.forEach((coord, index) => {
+                html += `<li>Точка ${index + 1}: ${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</li>`;
+            });
+            
+            // Расчет примерной длины маршрута
+            let totalDistance = 0;
+            for (let i = 1; i < route.coordinates.length; i++) {
+                const lat1 = route.coordinates[i-1][0];
+                const lon1 = route.coordinates[i-1][1];
+                const lat2 = route.coordinates[i][0];
+                const lon2 = route.coordinates[i][1];
+                
+                // Простой расчет расстояния (в километрах)
+                const distance = Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2)) * 111;
+                totalDistance += distance;
+            }
+            
+            html += `
+                    </ul>
+                    <p>Общая протяженность маршрута составляет примерно ${totalDistance.toFixed(2)} км.</p>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Функция для закрытия модального окна
+        function closeMonumentModal() {
+            const modal = document.getElementById('monument-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            return false;
+        }
+        
+        // Закрытие модального окна при клике вне контента
+        document.getElementById('monument-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMonumentModal();
+            }
+        });
+    </script>
+</body>
+</html>
